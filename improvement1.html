@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic Tac Toe</title>
+    <style>
+        table {
+            border-collapse: collapse;
+        }
+
+        td {
+            width: 50px;
+            height: 50px;
+            border: 1px solid black;
+            text-align: center;
+            font-size: 24px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Tic Tac Toe</h1>
+    <p>Select difficulty level:</p>
+    <button onclick="startGame('easy')">Easy</button>
+    <button onclick="startGame('medium')">Medium</button>
+    <button onclick="startGame('hard')">Hard</button>
+    <br><br>
+    <table id="board">
+        <tr>
+            <td onclick="makeMove(0, 0)"></td>
+            <td onclick="makeMove(0, 1)"></td>
+            <td onclick="makeMove(0, 2)"></td>
+            <td onclick="makeMove(0, 3)"></td>
+            <td onclick="makeMove(0, 4)"></td>
+            <td onclick="makeMove(0, 5)"></td>
+        </tr>
+        <tr>
+            <td onclick="makeMove(1, 0)"></td>
+            <td onclick="makeMove(1, 1)"></td>
+            <td onclick="makeMove(1, 2)"></td>
+            <td onclick="makeMove(1, 3)"></td>
+            <td onclick="makeMove(1, 4)"></td>
+            <td onclick="makeMove(1, 5)"></td>
+        </tr>
+        <tr>
+            <td onclick="makeMove(2, 0)"></td>
+            <td onclick="makeMove(2, 1)"></td>
+            <td onclick="makeMove(2, 2)"></td>
+            <td onclick="makeMove(2, 3)"></td>
+            <td onclick="makeMove(2, 4)"></td>
+            <td onclick="makeMove(2, 5)"></td>
+        </tr>
+        <tr>
+            <td onclick="makeMove(3, 0)"></td>
+            <td onclick="makeMove(3, 1)"></td>
+            <td onclick="makeMove(3, 2)"></td>
+            <td onclick="makeMove(3, 3)"></td>
+            <td onclick="makeMove(3, 4)"></td>
+            <td onclick="makeMove(3, 5)"></td>
+        </tr>
+        <tr>
+            <td onclick="makeMove(4, 0)"></td>
+            <td onclick="makeMove(4, 1)"></td>
+            <td onclick="makeMove(4, 2)"></td>
+            <td onclick="makeMove(4, 3)"></td>
+            <td onclick="makeMove(4, 4)"></td>
+            <td onclick="makeMove(4, 5)"></td>
+        </tr>
+    </table>
+
+    <script>
+        let board = [
+            ['', '', '', '', '', ''],
+            ['', '', '', '', '', ''],
+            ['', '', '', '', '', ''],
+            ['', '', '', '', '', ''],
+            ['', '', '', '', '', '']
+        ];
+
+        const player = 'X';
+        const opponent = 'O';
+        let difficultyLevel = '';
+
+        // Function to start the game based on difficulty level
+        function startGame(level) {
+            difficultyLevel = level;
+            resetGame();
+            if (level === 'easy') {
+                opponentMove = makeEasyMove;
+            } else if (level === 'medium') {
+                opponentMove = makeMediumMove;
+            } else if (level === 'hard') {
+                opponentMove = makeHardMove;
+            }
+        }
+
+        // Function to make a move
+        function makeMove(row, col) {
+            if (checkWin(player) || checkWin(opponent)) {
+                return; // Stop making moves if the game is already over
+            }
+            
+            if (board[row][col] === '') {
+                board[row][col] = player;
+                updateBoard();
+                if (checkWin(player)) {
+                    // Check if there are at least 3 Xs visible on the board
+                    if (countVisible(player) >= 3) {
+                        alert("Player X wins!");
+                        resetGame();
+                    }
+                } else {
+                    opponentMove();
+                    updateBoard();
+                    if (checkWin(opponent)) {
+                        // Check if there are at least 3 Os visible on the board
+                        if (countVisible(opponent) >= 3) {
+                            alert("Player O wins!");
+                            resetGame();
+                        }
+                    }
+                }
+            }
+        }
+
+        // Function to update the visual representation of the board
+        function updateBoard() {
+            const table = document.getElementById('board');
+            for (let i = 0; i < 5; i++) {
+                for (let j = 0; j < 6; j++) {
+                    table.rows[i].cells[j].textContent = board[i][j];
+                }
+            }
+        }
+
+        // Function to reset the game
+        function resetGame() {
+            board = [
+                ['', '', '', '', '', ''],
+                ['', '', '', '', '', ''],
+                ['', '', '', '', '', ''],
+                ['', '', '', '', '', ''],
+                ['', '', '', '', '', '']
+            ];
+            updateBoard();
+        }
+
+        function checkWin(player) {
+            // Check horizontal lines for 3 in a row
+            for (let i = 0; i < 5; i++) {
+                for (let j = 0; j < 4; j++) {
+                    if (board[i][j] === player && board[i][j + 1] === player && board[i][j + 2] === player) {
+                        return true;
+                    }
+                }
+            }
+
+            // Check vertical lines for 3 in a row
+            for (let i = 0; i < 3; i++) {
+                for (let j = 0; j < 6; j++) {
+                    if (board[i][j] === player && board[i + 1][j] === player && board[i + 2][j] === player) {
+                        return true;
+                    }
+                }
+            }
+
+            // Check diagonals for 3 in a row
+            for (let i = 0; i < 3; i++) {
+                for (let j = 0; j < 4; j++) {
+                    // Check diagonals from left to right
+                    if (board[i][j] === player && board[i + 1][j + 1] === player && board[i + 2][j + 2] === player) {
+                        return true;
+                    }
+                    // Check diagonals from right to left
+                    if (board[i][j + 2] === player && board[i + 1][j + 1] === player && board[i + 2][j] === player) {
+                        return true;
+                    }
+                }
+            }
+
+            // Check additional win condition for diagonals
+            if (
+                // From left to right: first row (second box) and second row (first box)
+                (board[0][1] === player && board[1][0] === player) ||
+                // From left to right: fifth row (second box) and fourth row (first box)
+                (board[4][1] === player && board[3][0] === player) ||
+                // From right to left: first row (second box) and second row (first box)
+                (board[0][4] === player && board[1][5] === player) ||
+                // From right to left: fifth row (second box) and fourth row (first box)
+                (board[4][4] === player && board[3][5] === player)
+            ) {
+                return true;
+            }
+
+            return false;
+        }
+
+        // Function to make a move for the opponent (AI)
+        let opponentMove;
+        function makeEasyMove() {
+            // Make a random move
+            while (true) {
+                const row = Math.floor(Math.random() * 5);
+                const col = Math.floor(Math.random() * 6);
+                if (board[row][col] === '') {
+                    board[row][col] = opponent;
+                    break;
+                }
+            }
+        }
+
+        // Function for medium mode
+        function makeMediumMove() {
+            // Try to place O in the center if available
+            if (board[2][2] === '') {
+                board[2][2] = opponent;
+                return;
+            }
+
+            // Try to block the player's winning moves
+            for (let i = 0; i < 5; i++) {
+                for (let j = 0; j < 6; j++) {
+                    if (board[i][j] === '') {
+                        board[i][j] = player;
+                        if (checkWin(player)) {
+                            board[i][j] = opponent;
+                            return;
+                        }
+                        board[i][j] = '';
+                    }
+                }
+            }
+
+            // If no winning moves to block, make a random move
+            makeEasyMove();
+        }
+
+        // Function for hard mode
+        function makeHardMove() {
+            // Try to make winning moves
+            if (makeWinningMove(opponent)) {
+                return;
+            }
+
+            // Try to block player's winning moves
+            if (makeWinningMove(player)) {
+                return;
+            }
+
+            // Occupy the center if available
+            if (board[2][2] === '') {
+                board[2][2] = opponent;
+                return;
+            }
+
+            // Occupy corners if available
+            const corners = [[0, 0], [0, 5], [4, 0], [4, 5]];
+            for (const [row, col] of corners) {
+                if (board[row][col] === '') {
+                    board[row][col] = opponent;
+                    return;
+                }
+            }
+
+            // Occupy edges if available
+            const edges = [[0, 2], [2, 0], [2, 5], [4, 2]];
+            for (const [row, col] of edges) {
+                if (board[row][col] === '') {
+                    board[row][col] = opponent;
+                    return;
+                }
+            }
+
+            // If all else fails, make a random move
+            makeEasyMove();
+        }
+
+        // Function to check and make winning moves
+        function makeWinningMove(symbol) {
+            // Check rows for potential winning moves
+            for (let i = 0; i < 5; i++) {
+                if (board[i].filter(cell => cell === symbol).length === 2 && board[i].includes('')) {
+                    const col = board[i].indexOf('');
+                    board[i][col] = opponent;
+                    return true;
+                }
+            }
+
+            // Check columns for potential winning moves
+            for (let j = 0; j < 6; j++) {
+                const column = [board[0][j], board[1][j], board[2][j], board[3][j], board[4][j]];
+                if (column.filter(cell => cell === symbol).length === 2 && column.includes('')) {
+                    const row = column.indexOf('');
+                    board[row][j] = opponent;
+                    return true;
+                }
+            }
+
+            // Check diagonals for potential winning moves
+            const diagonals = [
+                [board[0][0], board[1][1], board[2][2], board[3][3], board[4][4]],
+                [board[0][5], board[1][4], board[2][3], board[3][2], board[4][1]]
+            ];
+            for (const diagonal of diagonals) {
+                if (diagonal.filter(cell => cell === symbol).length === 2 && diagonal.includes('')) {
+                    const index = diagonal.indexOf('');
+                    if (diagonal === diagonals[0]) {
+                        board[index][index] = opponent;
+                    } else {
+                        board[index][5 - index] = opponent;
+                    }
+                    return true;
+                }
+            }
+
+            // Check additional win condition for diagonals
+            if (
+                // From left to right: first row (second box) and second row (first box)
+                (board[0][1] === player && board[1][0] === player) ||
+                // From left to right: fifth row (second box) and fourth row (first box)
+                (board[4][1] === player && board[3][0] === player) ||
+                // From right to left: first row (second box) and second row (first box)
+                (board[0][4] === player && board[1][5] === player) ||
+                // From right to left: fifth row (second box) and fourth row (first box)
+                (board[4][4] === player && board[3][5] === player)
+            ) {
+                return true;
+            }
+
+            return false;
+        }
+
+        // Function to count the number of symbols visible on the board
+        function countVisible(symbol) {
+            let count = 0;
+            for (let i = 0; i < 5; i++) {
+                for (let j = 0; j < 6; j++) {
+                    if (board[i][j] === symbol) {
+                        count++;
+                    }
+                }
+            }
+            return count;
+        }
+    </script>
+</body>
+</html>
